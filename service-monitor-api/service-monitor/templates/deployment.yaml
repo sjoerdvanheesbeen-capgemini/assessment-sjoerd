@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-monitor
+  template:
+    metadata:
+      labels:
+        app: service-monitor
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecretName }}
+      containers:
+      - name: service-monitor
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: service-monitor-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: service-monitor-secret
+              key: POSTGRES_PASSWORD
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: {{ .Values.serviceMonitorPort }}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.serviceMonitorPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 1
+          successThreshold: 1
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config/services.yaml
+          subPath: services.yaml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: service-config

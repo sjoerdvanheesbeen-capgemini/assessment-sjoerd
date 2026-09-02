@@ -1,0 +1,11 @@
+services:
+- name: restapi
+  type: rest
+  port: 8080
+  namespace: api
+  health_path: /health
+- name: postgresql
+  type: postgresql
+  namespace: database
+  port: 5432
+  db_name: db

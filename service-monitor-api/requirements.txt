@@ -1,0 +1,6 @@
+fastapi
+httpx
+attrs
+pyyaml
+psycopg2
+uvicorn

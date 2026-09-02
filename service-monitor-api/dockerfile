@@ -1,0 +1,25 @@
+FROM python:3.14-slim
+
+SHELL ["/bin/bash", "-c"]
+
+# Working directory (Linux path)
+WORKDIR /app
+
+# Copy your application
+COPY app/ /app/
+
+COPY requirements.txt /requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r /requirements.txt
+
+RUN groupadd -g 1000 appuser \
+    && useradd -u 1000 -g 1000 -m appuser
+
+USER appuser
+
+ENV PYTHONPATH="/app"
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

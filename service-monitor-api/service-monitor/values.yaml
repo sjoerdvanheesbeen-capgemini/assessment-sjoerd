@@ -1,0 +1,6 @@
+image:
+  repository:
+  tag:
+  pullSecretName:
+
+servicePort: 8000

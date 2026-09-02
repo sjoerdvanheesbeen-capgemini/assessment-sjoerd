@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-monitor
+spec:
+  selector:
+    run: service-monitor
+  type: ClusterIP
+  ports:
+  - name: http
+    port: {{ .Values.serviceMonitorPort }}
+    targetPort: {{ .Values.serviceMonitorPort }}
